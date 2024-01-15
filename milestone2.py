@@ -1,10 +1,12 @@
 import math
 import sys
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 
 sys.setrecursionlimit(20000)
 #open the input file
-inp= open("C:\\Users\\rammu\\OneDrive\\Desktop\\MSc SS\\6th sem\\kla-hackathon\\Workshop2024\\Milestone2\\Input\\Testcase2.txt",'r')
-out= open("C:\\Users\\rammu\\OneDrive\\Desktop\\MSc SS\\6th sem\\kla-hackathon\\Workshop2024\\Output\\Milestone2\\Testcase2.txt",'w')
+inp= open("C:\\Users\\rammu\\OneDrive\\Desktop\\MSc SS\\6th sem\\kla-hackathon\\Workshop2024\\Milestone2\\Input\\Testcase1.txt",'r')
+out= open("C:\\Users\\rammu\\OneDrive\\Desktop\\MSc SS\\6th sem\\kla-hackathon\\Workshop2024\\Output\\Milestone2\\Milestone2Output1.txt",'w')
 
 #read the input content into a dictionary
 lines=inp.readlines()
@@ -43,6 +45,21 @@ initial_point=(0,0)
 wafer_diameter=inp_dict["WaferDiameter"]
 wafer_radius=wafer_diameter/2
 
+#plot the wafer as a circle
+fig,ax=plt.subplots()
+
+cir = plt.Circle((0,0),radius=wafer_radius,edgecolor='b',facecolor='none')
+ax.add_patch(cir)
+
+ax.set_aspect('equal', adjustable='box')
+
+#plot vertical and horizontal lines to help visualize the cow
+ax.axvline(x=0, color='red', linestyle='--')
+ax.axhline(y=0, color='green', linestyle='--')
+
+#adjust scale of the graph
+ax.set_xlim(-wafer_radius-10, wafer_radius+10)
+ax.set_ylim(-wafer_radius-10, wafer_radius+10)
 
 ref_die_point=[x_ref,y_ref]   #center of reference die
 start_point=[ref_die_point[0]-(x_die/2),ref_die_point[1]-(y_die/2)]
@@ -62,6 +79,16 @@ def die_num(x_curr,y_curr,x_pos,y_pos):
     if left_dist<wafer_radius or right_dist<wafer_radius or top_dist<wafer_radius or top_right_dist<wafer_radius:
 
         out.write("("+str(x_pos)+","+str(y_pos)+"):("+str(x_curr)+","+str(y_curr)+")\n")
+
+        #plot the die in the graph for visualization
+        rect = Rectangle((x_curr,y_curr),x_die,y_die,edgecolor='r',facecolor='none')
+        ax.add_patch(rect)
+
+        #plot the index of the die
+        text_x = x_curr + x_die / 2
+        text_y = y_curr + y_die / 2
+        ax.text(text_x, text_y, "("+str(x_pos)+","+str(y_pos)+")", color='black', ha='center', va='center')
+
         if [x_pos-1,y_pos] not in visited:
             die_num(x_curr-x_die,y_curr,x_pos-1,y_pos)
         if [x_pos+1,y_pos] not in visited:
@@ -75,6 +102,8 @@ def die_num(x_curr,y_curr,x_pos,y_pos):
 
 
 die_num(start_point[0],start_point[1],0,0)
+
+plt.show()
 
 inp.close()
 out.close()
