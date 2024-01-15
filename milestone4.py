@@ -8,8 +8,8 @@ from matplotlib.patches import Rectangle
 sys.setrecursionlimit(20000)
 
 #open the input file
-inp= open("C:\\Users\\rammu\\OneDrive\\Desktop\\MSc SS\\6th sem\\kla-hackathon\\Workshop2024\\Milestone3\\Input\\Testcase2.txt",'r')
-out= open("C:\\Users\\rammu\\OneDrive\\Desktop\\MSc SS\\6th sem\\kla-hackathon\\Workshop2024\\Output\\Milestone3\\Milestone3Output2.txt",'w')
+inp= open("C:\\Users\\rammu\\OneDrive\\Desktop\\MSc SS\\6th sem\\kla-hackathon\\Workshop2024\\Milestone4\\Input\\Testcase4.txt",'r')
+out= open("C:\\Users\\rammu\\OneDrive\\Desktop\\MSc SS\\6th sem\\kla-hackathon\\Workshop2024\\Output\\Milestone4\\Milestone4Output4.txt",'w')
 
 #read the input content into a dictionary
 lines=inp.readlines()
@@ -34,11 +34,27 @@ for line in lines:
             inp_list[1][1]=float(inp_list[1][1])
         else:
             inp_list[1][1]=int(inp_list[1][1])
+    elif len(inp_list[1].split(" "))>1:
+        inp_list[1]=inp_list[1].split(" ")
+        for i in range(len(inp_list[1])):
+            temp=inp_list[1][i].split(",")
+            temp[0]=(temp[0].split("(")[1])
+            temp[1]=(temp[1].split(")")[0])
+            if len(temp[0].split("."))>1:
+                temp[0]=float(temp[0])
+            else:
+                temp[0]=int(temp[0])
+            if len(temp[1].split("."))>1:
+                temp[1]=float(temp[1])
+            else:
+                temp[1]=int(temp[1])
+            inp_list[1][i]=temp
     else:
         inp_list[1]=int(inp_list[1])
 
     inp_dict[inp_list[0]]=inp_list[1]
     
+print(inp_dict)
 
 #initial setup to start calculations
 x_die=inp_dict["DieSize"][0]
@@ -63,6 +79,10 @@ y_rsw=inp_dict["RecticleStreetWidthAndHeight"][1]
 x_dpr=inp_dict["DiesPerReticle"][0]
 y_dpr=inp_dict["DiesPerReticle"][1]
 
+meas_list=inp_dict["DieCoordinates"]
+
+boundary_radius=inp_dict["Radius"]
+
 ref_die_point=[x_ref,y_ref]   #center of reference die
 start_point=[ref_die_point[0]-(x_die/2),ref_die_point[1]-(y_die/2)]
 
@@ -70,6 +90,9 @@ start_point=[ref_die_point[0]-(x_die/2),ref_die_point[1]-(y_die/2)]
 fig,ax=plt.subplots()
 
 cir = plt.Circle((0,0),radius=wafer_radius,edgecolor='b',facecolor='none')
+ax.add_patch(cir)
+
+cir = plt.Circle((0,0),radius=boundary_radius,edgecolor='y',facecolor='none')
 ax.add_patch(cir)
 
 ax.set_aspect('equal', adjustable='box')
@@ -123,16 +146,25 @@ def die_num(x_curr,y_curr,x_pos,y_pos,x_pos_ret,y_pos_ret):
     if left_dist<wafer_radius or right_dist<wafer_radius or top_dist<wafer_radius or top_right_dist<wafer_radius:
 
         #write the output into the file
-        out.write("("+str(x_pos)+","+str(y_pos)+"):("+str(x_curr)+","+str(y_curr)+")\n")
+        if (left_dist>=boundary_radius or right_dist>=boundary_radius or top_dist>=boundary_radius or top_right_dist>=boundary_radius) and not (left_dist>boundary_radius and right_dist>boundary_radius and top_dist>boundary_radius and top_right_dist>boundary_radius):
+            
+            #plot the die in the graph for visualization
+            rect = Rectangle((x_curr,y_curr),x_die,y_die,edgecolor='r',facecolor='none')
+            ax.add_patch(rect)
 
-        #plot the die in the graph for visualization
-        rect = Rectangle((x_curr,y_curr),x_die,y_die,edgecolor='r')
-        ax.add_patch(rect)
+            #plot the index of the die
+            text_x = x_curr + x_die / 2
+            text_y = y_curr + y_die / 2
+            ax.text(text_x, text_y, "("+str(x_pos)+","+str(y_pos)+")", color='black', ha='center', va='center')
 
-        #plot the index of the die
-        text_x = x_curr + x_die / 2
-        text_y = y_curr + y_die / 2
-        ax.text(text_x, text_y, "("+str(x_pos)+","+str(y_pos)+")", color='black', ha='center', va='center')
+            for coord in meas_list:
+                x_temp = x_curr+coord[0]
+                y_temp = y_curr+coord[1]
+                if math.dist([0,0],[x_temp,y_temp])<boundary_radius:
+                    out.write("("+str(x_pos)+","+str(y_pos)+"):("+str(x_temp)+","+str(y_temp)+")\n")
+
+                    #plot the dot
+                    plt.plot(x_temp,y_temp,'ro')
 
         x_prev=x_next=x_dsw
         x_prev_change=x_next_change=0

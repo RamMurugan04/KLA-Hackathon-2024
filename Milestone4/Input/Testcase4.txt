@@ -6,4 +6,4 @@ DieStreetWidthAndHeight:(2,3)
 RecticleStreetWidthAndHeight:(5,7)
 DiesPerReticle:2x4
 Radius:75
-DieCoordinates:(2,2) (18,2) (2, 18) (18,18) (10,10)
+DieCoordinates:(2,2) (18,2) (2,18) (18,18) (10,10)
