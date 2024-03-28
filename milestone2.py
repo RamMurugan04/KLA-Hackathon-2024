@@ -5,8 +5,8 @@ from matplotlib.patches import Rectangle
 
 sys.setrecursionlimit(20000)
 #open the input file
-inp= open("C:\\Users\\rammu\\OneDrive\\Desktop\\MSc SS\\6th sem\\kla-hackathon\\Workshop2024\\Milestone2\\Input\\Testcase1.txt",'r')
-out= open("C:\\Users\\rammu\\OneDrive\\Desktop\\MSc SS\\6th sem\\kla-hackathon\\Workshop2024\\Output\\Milestone2\\Milestone2Output1.txt",'w')
+inp= open("C:\\Users\\rammu\\OneDrive\\Desktop\\MSc SS\\6th sem\\kla-hackathon\\Workshop2024\\Milestone2\\Input\\Testcase2.txt",'r')
+out= open("C:\\Users\\rammu\\OneDrive\\Desktop\\MSc SS\\6th sem\\kla-hackathon\\Workshop2024\\Output\\Milestone2\\Milestone2Output2.txt",'w')
 
 #read the input content into a dictionary
 lines=inp.readlines()

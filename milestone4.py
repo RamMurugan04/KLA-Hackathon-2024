@@ -76,8 +76,8 @@ y_dsw=inp_dict["DieStreetWidthAndHeight"][1]
 x_rsw=inp_dict["RecticleStreetWidthAndHeight"][0]
 y_rsw=inp_dict["RecticleStreetWidthAndHeight"][1]
 
-x_dpr=inp_dict["DiesPerReticle"][0]
-y_dpr=inp_dict["DiesPerReticle"][1]
+x_dpr=inp_dict["DiesPerReticle"][1]
+y_dpr=inp_dict["DiesPerReticle"][0]
 
 meas_list=inp_dict["DieCoordinates"]
 
@@ -106,7 +106,7 @@ ax.set_xlim(-wafer_radius-10, wafer_radius+10)
 ax.set_ylim(-wafer_radius-10, wafer_radius+10)
 
 #obtain the reticle die number of the reference die 
-x_temp=0
+x_temp=x_shift
 x_dpr_count=1
 
 while(start_point[0]>x_temp):
@@ -116,8 +116,15 @@ while(start_point[0]>x_temp):
         x_dpr_count=1
         x_temp+=x_rsw
 
+while(start_point[0]<x_temp):
+    x_temp-=(x_die+x_dsw)
+    x_dpr_count-=1
+    if x_dpr_count==0:
+        x_dpr_count=x_dpr
+        x_temp-=x_rsw
 
-y_temp=0
+    
+y_temp=y_shift
 y_dpr_count=1
 
 while(start_point[1]>y_temp):
@@ -126,6 +133,14 @@ while(start_point[1]>y_temp):
     if y_dpr_count==y_dpr+1:
         y_dpr_count=1
         y_temp+=y_rsw
+
+while(start_point[1]>y_temp):
+    y_temp-=(y_die+y_dsw)
+    y_dpr_count-=1
+    if y_dpr_count==0:
+        y_dpr_count=y_dpr
+        y_temp-=y_rsw
+
 
 die_pos_in_ret=[x_dpr_count,y_dpr_count]
 
@@ -146,7 +161,7 @@ def die_num(x_curr,y_curr,x_pos,y_pos,x_pos_ret,y_pos_ret):
     if left_dist<wafer_radius or right_dist<wafer_radius or top_dist<wafer_radius or top_right_dist<wafer_radius:
 
         #write the output into the file
-        if (left_dist>=boundary_radius or right_dist>=boundary_radius or top_dist>=boundary_radius or top_right_dist>=boundary_radius) and not (left_dist>boundary_radius and right_dist>boundary_radius and top_dist>boundary_radius and top_right_dist>boundary_radius):
+        if (left_dist>=boundary_radius or right_dist>=boundary_radius or top_dist>=boundary_radius or top_right_dist>=boundary_radius):
             
             #plot the die in the graph for visualization
             rect = Rectangle((x_curr,y_curr),x_die,y_die,edgecolor='r',facecolor='none')
@@ -174,13 +189,13 @@ def die_num(x_curr,y_curr,x_pos,y_pos,x_pos_ret,y_pos_ret):
         #set the variables such that reticle street width and height are considered when needed
         if x_pos_ret==1:
             x_prev+=x_rsw
-            x_prev_change=x_dpr+1-x_pos_ret
+            x_prev_change=x_dpr
         if x_pos_ret==x_dpr:
             x_next+=x_rsw
             x_next_change=-x_pos_ret
         if y_pos_ret==1:
             y_prev+=y_rsw
-            y_prev_change=y_dpr+1-y_pos_ret
+            y_prev_change=y_dpr
         if y_pos_ret==y_dpr:
             y_next+=y_rsw
             y_next_change=-y_pos_ret
